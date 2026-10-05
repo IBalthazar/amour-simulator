@@ -1,0 +1,384 @@
+/* =========================================================
+   AmorArcade Results Page
+   Put this file at: css/results.css
+   It is intentionally scoped mostly to the results page so it
+   can sit on top of your existing style.css without rewriting it.
+   ========================================================= */
+
+.results-screen {
+  min-height: 100vh;
+  padding: 32px 20px 64px;
+}
+
+.results-shell {
+  width: min(1050px, 100%);
+  margin: 0 auto;
+}
+
+.results-intro {
+  max-width: 760px;
+  margin-bottom: 30px;
+  line-height: 1.7;
+}
+
+.results-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 28px 0 42px;
+}
+
+.summary-stat {
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(8px);
+}
+
+.summary-stat strong {
+  display: block;
+  margin-bottom: 2px;
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1;
+}
+
+.summary-stat span {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.summary-stat small {
+  display: block;
+  opacity: 0.72;
+  line-height: 1.45;
+}
+
+.scenario-results-section {
+  margin-top: 18px;
+}
+
+.results-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 22px;
+}
+
+.results-section-heading h2 {
+  margin: 5px 0 0;
+}
+
+.results-section-heading > p {
+  margin: 0;
+  opacity: 0.78;
+  line-height: 1.6;
+}
+
+.scenario-results-list {
+  display: grid;
+  gap: 14px;
+}
+
+.scenario-result {
+  overflow: hidden;
+  border: 1px solid #f0dcd6;
+  border-radius: 13px;
+  background: #fffdfa;
+  box-shadow: 0 3px 12px rgba(76, 44, 43, 0.045);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.scenario-result[open] {
+  border-color: #edc9c0;
+  box-shadow: 0 6px 18px rgba(76, 44, 43, 0.07);
+}
+
+.scenario-result summary {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  color: #28232a;
+  transition: background-color 0.18s ease;
+}
+
+.scenario-result summary:hover {
+  background: #fff8f5;
+}
+
+.scenario-result summary::-webkit-details-marker {
+  display: none;
+}
+
+.scenario-result summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  margin-left: 2px;
+  place-items: center;
+  border: 1px solid #f0dcd6;
+  border-radius: 9px;
+  color: #a44e4b;
+  background: #fff7f3;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.scenario-result[open] summary::after {
+  content: "–";
+}
+
+.scenario-result-title {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin-right: auto;
+}
+
+.scenario-result-number {
+  color: #8e7e7c;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scenario-result-title strong {
+  color: #28232a;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.08rem;
+}
+
+.scenario-result .result-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.scenario-result .result-status.aligned {
+  color: #286343;
+  background: #eaf5ed;
+  border: 1px solid #c9e4d0;
+}
+
+.scenario-result .result-status.challenged {
+  color: #99493f;
+  background: #fff0e9;
+  border: 1px solid #f1c9ba;
+}
+
+.scenario-result .result-status.mixed {
+  color: #80602d;
+  background: #fbf3df;
+  border: 1px solid #ead9a9;
+}
+
+.scenario-result .result-status.skipped {
+  color: #6e6468;
+  background: #f3efed;
+  border: 1px solid #e2d9d5;
+}
+
+.scenario-result-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 18px;
+  border-top: 1px solid #f0e2dc;
+  background: #fbf7f4;
+}
+
+.analysis-block {
+  min-width: 0;
+  padding: 20px 22px;
+  border: 1px solid #eee3de;
+  border-radius: 12px;
+  color: #352e33;
+  background: #fff;
+}
+
+.analysis-block p {
+  margin: 0 0 12px;
+  color: #4f474d;
+  line-height: 1.6;
+}
+
+.analysis-block p:last-child {
+  margin-bottom: 0;
+}
+
+.analysis-label-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.analysis-label {
+  margin-bottom: 12px !important;
+  color: #a05c55 !important;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.analysis-main {
+  color: #302930 !important;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.6 !important;
+}
+
+.analysis-sub {
+  color: #756a70 !important;
+  font-size: 0.9rem;
+}
+
+.analysis-sub strong {
+  display: block;
+  margin-top: 5px;
+  color: #352e33;
+  font-weight: 700;
+}
+
+.choice-block,
+.course-block {
+  grid-column: 1 / -1;
+}
+
+.choice-block {
+  border-color: #efc8bf;
+  border-left: 3px solid #e88775;
+  background: #fff;
+}
+
+.comparison-block .analysis-label-row {
+  min-height: 22px;
+  margin-bottom: 4px;
+}
+
+.comparison-block .analysis-label {
+  margin-bottom: 0 !important;
+}
+
+.scenario-result .comparison-block .result-status {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+}
+
+.course-block {
+  border: 0;
+  border-left: 4px solid #e88775;
+  background: #fff3ee;
+}
+
+.course-reading {
+  margin-bottom: 9px !important;
+  color: #352e33 !important;
+  font-weight: 800;
+}
+
+.course-block blockquote {
+  margin: 16px 0 0;
+  padding: 15px 18px;
+  border-left: 3px solid #e88775;
+  border-radius: 10px;
+  color: #55464b;
+  background: #fff;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.final-reflection-card {
+  margin-top: 34px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.final-reflection-card h2 {
+  margin-top: 4px;
+}
+
+.final-reflection-card p {
+  max-width: 850px;
+  line-height: 1.7;
+}
+
+.results-note {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  font-size: 0.9rem;
+  opacity: 0.68;
+}
+
+.results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+@media (max-width: 760px) {
+  .results-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .results-section-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .scenario-result summary {
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .scenario-result summary::after {
+    width: 28px;
+    height: 28px;
+    margin-left: 0;
+  }
+
+  .scenario-result-body {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .choice-block,
+  .course-block {
+    grid-column: auto;
+  }
+
+  .analysis-block {
+    padding: 18px;
+  }
+
+  .analysis-label-row {
+    align-items: center;
+  }
+
+  .scenario-result .result-status {
+    font-size: 0.7rem;
+  }
+}

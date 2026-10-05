@@ -1,0 +1,432 @@
+const screens = document.querySelectorAll('[data-screen]');
+const menuToggle = document.querySelector('.menu-toggle');
+const mainNav = document.querySelector('.main-nav');
+const surveyQuestions = [
+  {
+    id: 'communication',
+    prompt: 'When something feels off in a relationship, I usually...',
+    options: [
+      { label: 'Talk about it right away', value: 'direct', signal: 'openness' },
+      { label: 'Take time to process before talking', value: 'reflective', signal: 'reflection' },
+      { label: 'Wait and see if it passes', value: 'patient', signal: 'patience' }
+    ]
+  },
+  {
+    id: 'independence',
+    prompt: 'A healthy relationship should leave room for...',
+    options: [
+      { label: 'A lot of shared time and rituals', value: 'together', signal: 'connection' },
+      { label: 'Separate interests and friendships', value: 'independent', signal: 'independence' },
+      { label: 'A flexible balance that changes over time', value: 'balanced', signal: 'adaptability' }
+    ]
+  },
+  {
+    id: 'trust',
+    prompt: 'For me, trust is built most by...',
+    options: [
+      { label: 'Consistency and keeping promises', value: 'consistent', signal: 'reliability' },
+      { label: 'Vulnerability and telling the truth', value: 'vulnerable', signal: 'openness' },
+      { label: 'Giving each other the benefit of the doubt', value: 'generous', signal: 'generosity' }
+    ]
+  }
+];
+
+const scenarios = [
+  {
+    title: 'Your partner planned a surprise trip but forgot it is your work promotion day. You...',
+    context: 'Two good things collide. What matters most in this moment?',
+    options: [
+      { icon: '✈️', label: 'Pack my bags and celebrate on the runway!', metric: 'adaptability', tag: 'Go with the flow' },
+      { icon: '💬', label: 'Have an honest chat about balancing priorities.', metric: 'openness', tag: 'Name what matters' },
+      { icon: '🗓️', label: 'Ask to reschedule so both moments get their space.', metric: 'reflection', tag: 'Make room for both' }
+    ]
+  },
+  {
+    title: 'You notice your partner has been quieter than usual over text. You...',
+    context: 'The reply bubbles have disappeared. How do you read the silence?',
+    options: [
+      { icon: '🔎', label: 'Check in directly and ask how they are doing.', metric: 'openness', tag: 'Check in' },
+      { icon: '🌿', label: 'Give them space and trust they will reach out.', metric: 'patience', tag: 'Give space' },
+      { icon: '📱', label: 'Send a light message to keep the connection warm.', metric: 'connection', tag: 'Stay connected' }
+    ]
+  },
+  {
+    title: 'Your friends invite you out on the one night your partner is free. You...',
+    context: 'Your calendar has one open square. Which promise gets your attention?',
+    options: [
+      { icon: '🎉', label: 'Keep plans with friends and make another date.', metric: 'independence', tag: 'Keep your plans' },
+      { icon: '💖', label: 'Choose the date night and tell friends honestly.', metric: 'connection', tag: 'Choose together' },
+      { icon: '⚖️', label: 'See if you can create a plan that includes both.', metric: 'adaptability', tag: 'Find a third way' }
+    ]
+  },
+  {
+    title: 'Your partner makes a joke that lands badly in front of friends. You...',
+    context: 'You want to protect the relationship without pretending it did not sting.',
+    options: [
+      { icon: '🗣️', label: 'Tell them privately how it felt after the gathering.', metric: 'openness', tag: 'Speak honestly' },
+      { icon: '🧘', label: 'Let it go unless it becomes a pattern.', metric: 'patience', tag: 'Choose perspective' },
+      { icon: '🤝', label: 'Use a gentle signal and talk about it later.', metric: 'reliability', tag: 'Repair together' }
+    ]
+  },
+  {
+    title: 'A big decision about the future is suddenly on the table. You...',
+    context: 'There is no perfect script for a shared future. What is your next move?',
+    options: [
+      { icon: '🧭', label: 'Talk through hopes, fears, and practical details.', metric: 'openness', tag: 'Make meaning together' },
+      { icon: '🌱', label: 'Take one small step and learn as you go.', metric: 'adaptability', tag: 'Grow into it' },
+      { icon: '🧩', label: 'Think it through alone before making a promise.', metric: 'reflection', tag: 'Know yourself first' }
+    ]
+  }
+];
+
+const archetypes = {
+  openness: { name: 'The Clear-Hearted', description: 'You value honest conversations and believe closeness grows when people make room for the real stuff.', traits: ['Direct', 'Curious', 'Emotionally brave'] },
+  reflection: { name: 'The Thoughtful Navigator', description: 'You notice the details. You create steadiness by giving feelings time to become useful information.', traits: ['Perceptive', 'Intentional', 'Grounded'] },
+  patience: { name: 'The Gentle Anchor', description: 'You bring calm to uncertainty and believe trust can deepen when it is not rushed.', traits: ['Patient', 'Steady', 'Compassionate'] },
+  connection: { name: 'The Tender Connector', description: 'You make relationships feel lived-in, memorable, and cared for through the small moments.', traits: ['Warm', 'Loyal', 'Attentive'] },
+  independence: { name: 'The Free-Spirited Partner', description: 'You protect the individuality that makes a relationship more interesting, honest, and alive.', traits: ['Independent', 'Open-minded', 'Self-aware'] },
+  adaptability: { name: 'The Possibility Maker', description: 'You can hold competing needs at once and look for creative ways forward when plans change.', traits: ['Flexible', 'Resourceful', 'Optimistic'] },
+  reliability: { name: 'The Steady Builder', description: 'You trust the everyday evidence of care: follow-through, repair, and showing up again.', traits: ['Dependable', 'Loyal', 'Practical'] },
+  generosity: { name: 'The Open-Handed One', description: 'You lead with generosity and give people room to be more than their hardest moment.', traits: ['Generous', 'Trusting', 'Big-hearted'] }
+};
+
+const state = {
+  surveyAnswers: {},
+  scenarioChoices: [],
+  surveyIndex: 0,
+  scenarioIndex: 0,
+  selectedScenario: null
+};
+
+function showScreen(name) {
+  screens.forEach((screen) => {
+    screen.hidden = screen.dataset.screen !== name;
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  mainNav.classList.remove('open');
+  menuToggle.setAttribute('aria-expanded', 'false');
+}
+
+function renderSurvey() {
+  const question = surveyQuestions[state.surveyIndex];
+  const form = document.querySelector('#survey-form');
+  document.querySelector('#survey-step').textContent = `QUESTION ${state.surveyIndex + 1} OF ${surveyQuestions.length}`;
+  form.innerHTML = `<fieldset><legend>${question.prompt}</legend>${question.options.map((option) => `
+    <label class="answer-option ${state.surveyAnswers[question.id] === option.value ? 'selected' : ''}">
+      <input type="radio" name="${question.id}" value="${option.value}" ${state.surveyAnswers[question.id] === option.value ? 'checked' : ''}>
+      <span>${option.label}</span><span class="answer-check" aria-hidden="true">✓</span>
+    </label>`).join('')}</fieldset>`;
+  form.querySelectorAll('input').forEach((input) => {
+    input.addEventListener('change', () => {
+      form.querySelectorAll('.answer-option').forEach((option) => option.classList.remove('selected'));
+      input.closest('.answer-option').classList.add('selected');
+      document.querySelector('#survey-next').disabled = false;
+    });
+  });
+  document.querySelector('#survey-next').disabled = !state.surveyAnswers[question.id];
+}
+
+function startSurvey() {
+  state.surveyAnswers = {};
+  state.scenarioChoices = [];
+  state.surveyIndex = 0;
+  state.scenarioIndex = 0;
+  renderSurvey();
+  showScreen('survey');
+}
+
+function renderScenario() {
+  const scenario = scenarios[state.scenarioIndex];
+  document.querySelector('#scenario-step').textContent = `SCENARIO ${state.scenarioIndex + 1} OF ${scenarios.length}`;
+  document.querySelector('#scenario-progress').style.width = `${((state.scenarioIndex + 1) / scenarios.length) * 100}%`;
+  document.querySelector('#scenario-title').textContent = scenario.title;
+  document.querySelector('#scenario-context').textContent = scenario.context;
+  document.querySelector('#scenario-options').innerHTML = scenario.options.map((option, index) => `
+    <button class="scenario-option ${state.selectedScenario === index ? 'selected' : ''}" type="button" data-option="${index}">
+      <span class="option-icon ${index === 1 ? 'orange' : ''}">${option.icon}</span>
+      <span>${option.label}</span><span class="select-indicator ${state.selectedScenario === index ? '' : 'empty'}">${state.selectedScenario === index ? '✓' : ''}</span>
+    </button>`).join('');
+  const nextButton = document.querySelector('#scenario-next');
+  nextButton.disabled = state.selectedScenario === null;
+  nextButton.innerHTML = `${state.scenarioIndex === scenarios.length - 1 ? 'See my results' : 'Choose a response'} <img src="assets/arrow-right.svg" alt="">`;
+  document.querySelectorAll('[data-option]').forEach((option) => {
+    option.addEventListener('click', () => {
+      state.selectedScenario = Number(option.dataset.option);
+      renderScenario();
+    });
+  });
+}
+
+function startScenarios() {
+  state.scenarioIndex = 0;
+  state.scenarioChoices = [];
+  state.selectedScenario = null;
+  renderScenario();
+  showScreen('scenarios');
+}
+
+function getDominantSignal() {
+  const scores = {};
+  surveyQuestions.forEach((question) => {
+    const answer = question.options.find((option) => option.value === state.surveyAnswers[question.id]);
+    if (answer) scores[answer.signal] = (scores[answer.signal] || 0) + 2;
+  });
+  state.scenarioChoices.forEach((choice) => {
+    scores[choice.metric] = (scores[choice.metric] || 0) + 1;
+  });
+  return Object.entries(scores).sort((a, b) => b[1] - a[1])[0]?.[0] || 'openness';
+}
+
+function renderResults() {
+  const signal = getDominantSignal();
+  const archetype = archetypes[signal];
+  document.querySelector('#archetype-name').textContent = archetype.name;
+  document.querySelector('#archetype-description').textContent = archetype.description;
+  document.querySelector('#archetype-traits').innerHTML = archetype.traits.map((trait) => `<span>${trait}</span>`).join('');
+  document.querySelector('#results-intro').textContent = `You brought ${state.scenarioChoices.length} choices and ${Object.keys(state.surveyAnswers).length} starting beliefs to the table. Here is the pattern we noticed.`;
+  document.querySelector('#comparison-list').innerHTML = surveyQuestions.map((question) => {
+    const answer = question.options.find((option) => option.value === state.surveyAnswers[question.id]);
+    const choice = state.scenarioChoices.find((item) => item.metric === answer?.signal);
+    return `<div class="comparison-item"><span>${question.prompt}</span><strong>${answer?.label || 'Not answered'}</strong><small>${choice ? `Your choices echoed this: ${choice.tag}.` : 'Your scenarios added a new angle to this belief.'}</small></div>`;
+  }).join('');
+  showScreen('results');
+}
+
+document.querySelector('#survey-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const question = surveyQuestions[state.surveyIndex];
+  const selected = new FormData(event.currentTarget).get(question.id);
+  if (!selected) return;
+  state.surveyAnswers[question.id] = selected;
+  if (state.surveyIndex < surveyQuestions.length - 1) {
+    state.surveyIndex += 1;
+    renderSurvey();
+  } else {
+    startScenarios();
+  }
+});
+
+document.querySelector('#scenario-next').addEventListener('click', () => {
+  if (state.selectedScenario === null) return;
+  const selected = scenarios[state.scenarioIndex].options[state.selectedScenario];
+  state.scenarioChoices.push(selected);
+  if (state.scenarioIndex < scenarios.length - 1) {
+    state.scenarioIndex += 1;
+    state.selectedScenario = null;
+    renderScenario();
+  } else {
+    renderResults();
+  }
+});
+
+document.querySelector('#play-again').addEventListener('click', startSurvey);
+document.querySelector('#back-to-home').addEventListener('click', () => showScreen('welcome'));
+
+document.querySelectorAll('[data-route]').forEach((control) => {
+  control.addEventListener('click', () => {
+    if (control.dataset.route === 'survey') startSurvey();
+    else showScreen(control.dataset.route);
+  });
+});
+
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    const target = link.getAttribute('href').slice(1);
+    if (target === 'welcome') {
+      event.preventDefault();
+      showScreen('welcome');
+    } else if (target === 'archetypes') {
+      event.preventDefault();
+      showScreen('archetypes');
+    } else if (target === 'science') {
+      event.preventDefault();
+      startSurvey();
+    }
+  });
+});
+
+menuToggle.addEventListener('click', () => {
+  const isOpen = mainNav.classList.toggle('open');
+  menuToggle.setAttribute('aria-expanded', String(isOpen));
+});
+
+showScreen('welcome');
+
+function showScreen(name) {
+  screens.forEach((screen) => {
+    screen.hidden = screen.dataset.screen !== name;
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  mainNav.classList.remove('open');
+  menuToggle.setAttribute('aria-expanded', 'false');
+}
+
+document.querySelectorAll('[data-route]').forEach((control) => {
+  control.addEventListener('click', () => showScreen(control.dataset.route));
+});
+
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    const target = link.getAttribute('href').slice(1);
+    if (target === 'welcome') {
+      event.preventDefault();
+      showScreen('welcome');
+    } else if (target === 'archetypes') {
+      event.preventDefault();
+      showScreen('archetypes');
+    } else if (target === 'science') {
+      event.preventDefault();
+      showScreen('survey');
+    }
+  });
+});
+
+menuToggle.addEventListener('click', () => {
+  const isOpen = mainNav.classList.toggle('open');
+  menuToggle.setAttribute('aria-expanded', String(isOpen));
+});
+
+document.querySelectorAll('.scenario-option').forEach((option) => {
+  option.addEventListener('click', () => {
+    document.querySelectorAll('.scenario-option').forEach((item) => item.classList.remove('selected'));
+    option.classList.add('selected');
+  });
+});
+
+showScreen('welcome');
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AmorArcade: discover your love style through fun relationship scenarios.">
+  <title>AmorArcade | Love and Dating in the Digital Age</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="app">
+    <section class="screen screen-welcome" data-screen="welcome" aria-labelledby="welcome-title">
+      <header class="site-header">
+        <a class="brand" href="#welcome" aria-label="AmorArcade home">
+          <span class="brand-badge"><img src="assets/heart-handshake.svg" alt=""></span>
+          <span class="brand-name">AmorArcade</span>
+        </a>
+        <nav class="main-nav" aria-label="Primary navigation">
+          <a class="active" href="#welcome">How it Works</a>
+          <a href="#archetypes">Archetypes</a>
+          <a href="#science">Relationship Science</a>
+          <button class="beta-button" type="button" data-route="survey">Beta Access</button>
+        </nav>
+        <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">Menu</button>
+      </header>
+
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><img src="assets/sparkle.svg" alt=""> <span>The ultimate diagnostic game</span></div>
+          <div class="headline-group">
+            <h1 id="welcome-title">Discover your<br><span>Love Style</span> through<br>15 fun scenarios.</h1>
+            <p>Stop taking boring quizzes. Navigate messy dating situations, partner disasters, and relationship dilemmas in this gamified lab. Unlock your archetype based on real science.</p>
+          </div>
+          <div class="social-proof">
+            <div class="avatar-stack" aria-hidden="true">
+              <img src="assets/avatar-1.png" alt="">
+              <img src="assets/avatar-2.png" alt="">
+              <img src="assets/avatar-3.png" alt="">
+            </div>
+            <p>🔥 Over <strong>52,490 games played</strong> this week alone</p>
+          </div>
+          <div class="actions">
+            <button class="primary-button" type="button" data-route="survey">Play AmorArcade <img src="assets/arrow-right.svg" alt=""></button>
+            <button class="secondary-button" type="button" data-route="archetypes">Meet the Archetypes</button>
+          </div>
+          <div class="checklist" aria-label="Game features">
+            <span>⚡ <b>Takes 5 mins</b></span>
+            <span>🧠 <b>Backed by therapy models</b></span>
+            <span>💖 <b>Unlock Love Archetype</b></span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Preview of a relationship scenario">
+          <article class="scenario-card">
+            <div class="scenario-topline"><strong>AmorArcade</strong><span class="streak">🔥 STREAK: 4</span></div>
+            <div class="progress-meta"><span>SCENARIO 5 OF 15</span><b>COMMUNICATION METRIC</b></div>
+            <div class="progress-track"><span></span></div>
+            <h2>Your partner planned a surprise trip but forgot it's your work promotion day. You...</h2>
+            <div class="options">
+              <button class="scenario-option selected" type="button"><span class="option-icon">✈️</span><span>Pack my bags and celebrate on the runway!</span><span class="select-indicator"><img src="assets/check.svg" alt="Selected"></span></button>
+              <button class="scenario-option" type="button"><span class="option-icon orange">💬</span><span>Have an honest chat about balancing priorities.</span><span class="select-indicator empty" aria-hidden="true"></span></button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen game-screen" data-screen="survey" hidden aria-labelledby="survey-title">
+      <div class="game-shell">
+        <a class="back-link" href="#welcome">← Back to welcome</a>
+        <div class="game-heading">
+          <p class="eyebrow">INTRODUCTORY SURVEY</p>
+          <p class="step-label" id="survey-step">QUESTION 1 OF 3</p>
+          <h1 id="survey-title">Let's get to know your dating world.</h1>
+          <p>There are no right answers. Choose the response that feels most like you right now.</p>
+        </div>
+        <form class="question-form" id="survey-form"></form>
+        <div class="game-actions">
+          <button class="primary-button" id="survey-next" type="submit" form="survey-form">Continue <img src="assets/arrow-right.svg" alt=""></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen game-screen" data-screen="scenarios" hidden aria-labelledby="scenario-title">
+      <div class="game-shell scenario-shell">
+        <a class="back-link" href="#welcome">← Exit game</a>
+        <div class="game-heading scenario-heading">
+          <div class="scenario-status"><span class="step-label" id="scenario-step">SCENARIO 1 OF 5</span><span class="streak">🔥 STREAK: 0</span></div>
+          <div class="game-progress"><span id="scenario-progress"></span></div>
+          <p class="eyebrow">RELATIONSHIP DILEMMA</p>
+          <h1 id="scenario-title"></h1>
+          <p id="scenario-context"></p>
+        </div>
+        <div class="scenario-options" id="scenario-options"></div>
+        <div class="game-actions scenario-actions">
+          <button class="primary-button" id="scenario-next" type="button" disabled>Choose a response <img src="assets/arrow-right.svg" alt=""></button>
+        </div>
+      </div>
+    </section>
+    <section class="screen placeholder-screen" data-screen="archetypes" hidden>
+      <a class="back-link" href="#welcome">← Back to welcome</a>
+      <p class="eyebrow">LOVE ARCHETYPES</p><h1>Meet the patterns behind your choices.</h1>
+      <p>The archetypes view is ready for the next implementation pass.</p>
+    </section>
+    <section class="screen results-screen" data-screen="results" hidden aria-labelledby="results-title">
+      <div class="results-shell">
+        <a class="back-link" href="#welcome">← Back to welcome</a>
+        <p class="eyebrow">YOUR LOVE STYLE</p>
+        <h1 id="results-title">Your pattern is taking shape.</h1>
+        <p class="results-intro" id="results-intro"></p>
+        <div class="results-grid">
+          <article class="result-card result-card-highlight">
+            <p class="card-kicker">YOUR ARCHETYPE</p>
+            <h2 id="archetype-name"></h2>
+            <p id="archetype-description"></p>
+            <div class="trait-list" id="archetype-traits"></div>
+          </article>
+          <article class="result-card">
+            <p class="card-kicker">BELIEFS VS. CHOICES</p>
+            <div class="comparison-list" id="comparison-list"></div>
+          </article>
+        </div>
+        <div class="results-actions">
+          <button class="primary-button" id="play-again" type="button">Play again <img src="assets/arrow-right.svg" alt=""></button>
+          <button class="secondary-button" id="back-to-home" type="button">Back to home</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+</body>
+</html>

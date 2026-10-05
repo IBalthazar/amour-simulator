@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Amour Simulator: compare your beliefs about love and relationships with the choices you make in difficult scenarios.">
+  <title>Amour Simulator</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Keep your existing stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Add this new stylesheet after style.css -->
+  <link rel="stylesheet" href="css/results.css">
+
+  <!-- <link rel="stylesheet" href="css/ui-refresh.css"> -->
+</head>
+
+<body>
+  <main id="app">
+
+    <!-- WELCOME -->
+    <section class="screen screen-welcome" data-screen="welcome" aria-labelledby="welcome-title">
+      <header class="site-header">
+        <span class="brand-name">
+          <span class="brand-icon"><img src="assets/heart-handshake.svg" alt=""></span>
+          AMOUR SIMULATOR
+        </span>
+      </header>
+
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="headline-group">
+            <h1 id="welcome-title">
+              Put your<br>
+              <span>relationship beliefs</span><br>
+              to the test.
+            </h1>
+
+            <p>
+              Start by describing what you believe about love, trust, sacrifice,
+              attraction, privacy, and intimacy. Then make your way through
+              14 difficult relationship scenarios and compare your decisions
+              with the beliefs you started with.
+            </p>
+          </div>
+
+          <div class="actions">
+            <button class="primary-button" type="button" data-route="survey">
+              Begin
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTRO SURVEY -->
+    <section class="screen game-screen" data-screen="survey" hidden aria-labelledby="survey-title">
+      <div class="game-shell">
+        <a class="back-link" href="#welcome">← Back to welcome</a>
+
+        <div class="game-heading">
+          <p class="eyebrow">INTRODUCTORY SURVEY</p>
+          <p class="step-label" id="survey-step">QUESTION 1 OF 14</p>
+
+          <h1 id="survey-title">What do you believe before the scenarios begin?</h1>
+
+          <p>
+            There are no right or wrong answers. Rate each broad statement from
+            strongly agree to strongly disagree. Your answers will only be used
+            later to compare your stated beliefs with the decisions you make.
+          </p>
+        </div>
+
+        <form class="question-form" id="survey-form"></form>
+
+        <div class="game-actions">
+          <button class="primary-button" id="survey-next" type="submit" form="survey-form">
+            Continue
+            <img src="assets/arrow-right.svg" alt="">
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENARIOS -->
+    <section class="screen game-screen" data-screen="scenarios" hidden aria-labelledby="scenario-title">
+      <div class="game-shell scenario-shell">
+        <a class="back-link" href="#welcome">← Exit game</a>
+
+        <div class="game-heading scenario-heading">
+          <div class="scenario-status">
+            <span class="step-label" id="scenario-step">SCENARIO 1 OF 14</span>
+          </div>
+
+          <div class="game-progress">
+            <span id="scenario-progress"></span>
+          </div>
+
+          <p class="eyebrow" id="scenario-topic">RELATIONSHIP DILEMMA</p>
+          <h1 id="scenario-title"></h1>
+          <p id="scenario-context"></p>
+        </div>
+
+        <div class="scenario-options" id="scenario-options"></div>
+
+        <div class="game-actions scenario-actions">
+          <button class="primary-button" id="scenario-next" type="button" disabled>
+            Choose a response
+            <img src="assets/arrow-right.svg" alt="">
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT WARNING FOR SCENARIO 4 -->
+    <section class="screen game-screen" data-screen="trigger-warning" hidden aria-labelledby="trigger-warning-title">
+      <div class="game-shell">
+        <a class="back-link" href="#welcome">← Exit game</a>
+
+        <div class="game-heading">
+          <p class="eyebrow">CONTENT NOTE · SCENARIO 4</p>
+          <h1 id="trigger-warning-title">Content warning</h1>
+
+          <p>
+            The next scenario depicts intimate partner violence, including
+            strangulation, and mentions PTSD. You can view or skip this scenario.
+          </p>
+
+          <div class="game-actions">
+            <button class="primary-button" id="view-trigger-warning" type="button">
+              View scenario
+              <img src="assets/arrow-right.svg" alt="">
+            </button>
+
+            <button class="secondary-button" id="skip-trigger-warning" type="button">
+              Skip scenario
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="screen results-screen" data-screen="results" hidden aria-labelledby="results-title">
+      <div class="results-shell">
+        <a class="back-link" href="#welcome">← Back to welcome</a>
+
+        <p class="eyebrow">YOUR RESULTS</p>
+        <h1 id="results-title">Your beliefs under pressure.</h1>
+
+        <p class="results-intro" id="results-intro">
+          You began with broad beliefs about love and relationships. Below is a
+          scenario-by-scenario look at where your later decisions reflected,
+          complicated, or challenged those starting beliefs.
+        </p>
+
+        <div class="results-summary" id="results-summary" aria-label="Results summary"></div>
+
+        <section class="scenario-results-section" aria-labelledby="scenario-results-heading">
+          <div class="results-section-heading">
+            <div>
+              <p class="card-kicker">SCENARIO-BY-SCENARIO ANALYSIS</p>
+              <h2 id="scenario-results-heading">Compare each choice with your starting belief.</h2>
+            </div>
+
+            <p>
+              Open a scenario to see your choice, the related intro-survey
+              response, how the two compare, and the connection to the course text.
+            </p>
+          </div>
+
+          <div class="scenario-results-list" id="scenario-results-list"></div>
+        </section>
+
+        <section class="final-reflection-card">
+          <p class="card-kicker">FINAL REFLECTION</p>
+          <h2>What changed when the situation became personal?</h2>
+          <p id="final-reflection"></p>
+          <p class="results-note">
+            These comparisons are not a moral score or a psychological diagnosis.
+            They are meant to highlight places where context, emotion, competing
+            values, and relationship history affected how you applied your stated beliefs.
+          </p>
+        </section>
+
+        <div class="results-actions">
+          <button class="primary-button" id="play-again" type="button">
+            Play again
+            <img src="assets/arrow-right.svg" alt="">
+          </button>
+
+          <button class="secondary-button" id="back-to-home" type="button">
+            Back to home
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
